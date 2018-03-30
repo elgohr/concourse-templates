@@ -1,0 +1,32 @@
+# VARIABLES
+sonarqube_url: &__SONARQUBE_URL__ ((sonarqube-url))
+sonarqube_token: &__SONARQUBE_TOKEN__ ((sonarqube-token))
+sonarqube_project_name: &__SONARQUBE_PROJECT_NAME__ ((sonarqube-project-name))
+
+resource_types:
+- name: sonarqube
+  type: docker-image
+  source:
+    repository: cathive/concourse-sonarqube-resource
+    tag: latest
+
+resources:
+- name: concourse-template
+    type: git
+    source:
+      uri: *__GIT_URL__
+      branch: master
+- name: sonar-results
+  type: sonarqube
+  source:
+    host_url: *__SONARQUBE_URL__
+    login: *__SONARQUBE_TOKEN__
+    project_key: *__SONARQUBE_PROJECT_NAME__
+
+jobs:
+- name: publish
+  plan:
+  - get: sonar-results
+    trigger: true
+  - task: publish
+    file: concourse-template/sonarqube-notification/job.yml

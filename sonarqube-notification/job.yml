@@ -1,0 +1,14 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: alpine
+
+inputs:
+- name: concourse-template
+- name: sonar-results
+
+run:
+  path: concourse-template/sonarqube-notification/job.sh
