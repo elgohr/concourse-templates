@@ -2,3 +2,10 @@
 
 ls sonar-results
 gron sonar-results/result.json
+
+gron result.json \
+| grep measures \
+| grep -v periods \
+| grep -v "\[\]" \
+| grep -v {} \
+| awk '{split($0,a,"]."); print a[2]}'
