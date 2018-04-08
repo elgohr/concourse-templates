@@ -3,7 +3,7 @@
 ls sonar-results
 gron sonar-results/result.json
 
-gron result.json \
+gron sonar-results/result.json \
 | grep measures \
 | grep -v periods \
 | grep -v "\[\]" \
