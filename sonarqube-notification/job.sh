@@ -1,8 +1,5 @@
 #!/usr/bin/env sh
 
-ls sonar-results
-gron sonar-results/result.json
-
 gron sonar-results/result.json \
 | grep measures \
 | grep -v periods \
