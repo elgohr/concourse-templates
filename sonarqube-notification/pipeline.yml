@@ -1,32 +1,35 @@
 # VARIABLES
 sonarqube_url: &__SONARQUBE_URL__ ((sonarqube-url))
 sonarqube_token: &__SONARQUBE_TOKEN__ ((sonarqube-token))
-sonarqube_project_name: &__SONARQUBE_PROJECT_NAME__ ((sonarqube-project-name))
+sonarqube_project_name: &__SONARQUBE_COMPONENT__ ((sonarqube-component))
 
 resource_types:
-- name: sonarqube
+- name: sonarqube-notifier
   type: docker-image
   source:
-    repository: cathive/concourse-sonarqube-resource
+    repository: lgohr/sonarqube
     tag: latest
 
 resources:
 - name: concourse-template
-    type: git
-    source:
-      uri: *__GIT_URL__
-      branch: master
-- name: sonar-results
-  type: sonarqube
+  type: git
   source:
-    host_url: *__SONARQUBE_URL__
-    login: *__SONARQUBE_TOKEN__
-    project_key: *__SONARQUBE_PROJECT_NAME__
+    uri: https://github.com/elgohr/concourse-templates
+    branch: master
+- name: sonar-results
+  type: sonarqube-notifier
+  source:
+    target: *__SONARQUBE_URL__
+    sonartoken: *__SONARQUBE_TOKEN__
+    component: *__SONARQUBE_COMPONENT__
+    metrics: ncloc,complexity,violations,coverage
 
 jobs:
 - name: publish
   plan:
-  - get: sonar-results
-    trigger: true
+  - aggregate:
+    - get: sonar-results
+      trigger: true
+    - get: concourse-template
   - task: publish
     file: concourse-template/sonarqube-notification/job.yml
