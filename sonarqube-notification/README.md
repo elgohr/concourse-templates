@@ -9,7 +9,7 @@ Get Sonarqube results and post them to Slack.
 * `slack-channel`: *Required.* The slack channel to post to.
 
 ```bash
-fly -t target set-pipeline -p sonarqube-notification \
+fly -t target set-pipeline -p sonarqube-notification -c pipeline.yml \
 --var 'sonarqube-url=xxxx' --var 'sonarqube-token=xxxx' \
 --var 'sonarqube-component=xxxx' --var 'slack-hook=xxxx' \
 --var 'slack-channel=xxxx'

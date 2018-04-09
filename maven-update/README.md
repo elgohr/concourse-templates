@@ -8,7 +8,7 @@ Automatically update Maven dependencies once a week.
 * `git-password`: *Required.* Password to access the repository
 
 ```bash
-fly -t target set-pipeline -p maven-update \
+fly -t target set-pipeline -p maven-update -c pipeline.yml \
 --var 'git-url=xxxx' --var 'git-branch=xxxx' \
 --var 'git-username=xxxx' --var 'git-password=xxxx'
 ```
