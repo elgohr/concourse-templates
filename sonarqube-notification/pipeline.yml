@@ -20,11 +20,13 @@ resource_types:
 resources:
 - name: concourse-template
   type: git
+  check_every: 240m
   source:
     uri: https://github.com/elgohr/concourse-templates
     branch: master
 - name: sonar-results
   type: sonarqube-notifier
+  check_every: 5m
   source:
     target: *__SONARQUBE_URL__
     sonartoken: *__SONARQUBE_TOKEN__
