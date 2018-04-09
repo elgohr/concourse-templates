@@ -33,7 +33,7 @@ resources:
 - name: slack-alert
   type: slack-notification
   source:
-    url: *__SLACK_URL__
+    url: *__SLACK_HOOK__
 
 jobs:
 - name: publish
