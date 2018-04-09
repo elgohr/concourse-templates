@@ -7,10 +7,3 @@ Get Sonarqube results and post them to Slack.
 * `sonarqube-component`: *Required.* The component _key_ of your component. This is shown in the dashboard url as https://my-atlassian/sonar/dashboard?id=ComponentKey
 * `slack-hook`: *Required.* The [slack hook](https://api.slack.com/incoming-webhooks#sending_messages)
 * `slack-channel`: *Required.* The slack channel to post to.
-
-```bash
-fly -t target set-pipeline -p sonarqube-notification \
---var 'sonarqube-url=xxxx' --var 'sonarqube-token=xxxx' \
---var 'sonarqube-component=xxxx' --var 'slack-hook=xxxx' \
---var 'slack-channel=xxxx'
-```
