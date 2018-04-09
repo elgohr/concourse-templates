@@ -10,5 +10,8 @@ inputs:
 - name: concourse-template
 - name: sonar-results
 
+outputs:
+- name: output
+
 run:
   path: concourse-template/sonarqube-notification/job.sh

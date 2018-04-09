@@ -2,12 +2,19 @@
 sonarqube_url: &__SONARQUBE_URL__ ((sonarqube-url))
 sonarqube_token: &__SONARQUBE_TOKEN__ ((sonarqube-token))
 sonarqube_project_name: &__SONARQUBE_COMPONENT__ ((sonarqube-component))
+slack_hook: &__SLACK_HOOK__ ((slack-hook))
+slack_channel: &__SLACK_CHANNEL__ ((slack-channel))
 
 resource_types:
 - name: sonarqube-notifier
   type: docker-image
   source:
     repository: lgohr/sonarqube
+    tag: latest
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
     tag: latest
 
 resources:
@@ -23,6 +30,10 @@ resources:
     sonartoken: *__SONARQUBE_TOKEN__
     component: *__SONARQUBE_COMPONENT__
     metrics: ncloc,complexity,violations,coverage
+- name: slack-alert
+  type: slack-notification
+  source:
+    url: *__SLACK_URL__
 
 jobs:
 - name: publish
@@ -33,3 +44,7 @@ jobs:
     - get: concourse-template
   - task: publish
     file: concourse-template/sonarqube-notification/job.yml
+  - put: slack-alert
+    params:
+      channel: *__SLACK_CHANNEL__
+      text_file: output/slack_message
