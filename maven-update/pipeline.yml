@@ -1,52 +1,36 @@
 # VARIABLES
-sonarqube_url: &__SONARQUBE_URL__ ((sonarqube-url))
-sonarqube_token: &__SONARQUBE_TOKEN__ ((sonarqube-token))
-sonarqube_project_name: &__SONARQUBE_COMPONENT__ ((sonarqube-component))
-slack_hook: &__SLACK_HOOK__ ((slack-hook))
-slack_channel: &__SLACK_CHANNEL__ ((slack-channel))
-
-resource_types:
-- name: sonarqube-notifier
-  type: docker-image
-  source:
-    repository: lgohr/sonarqube
-    tag: latest
-- name: slack-notification
-  type: docker-image
-  source:
-    repository: cfcommunity/slack-notification-resource
-    tag: latest
+git_url: &__GIT_URL__ ((git-url))
+git_branch: &__GIT_BRANCH__ ((git-branch))
+git_username: &__GIT_USERNAME__ ((git-username))
+git_password: &__GIT_PASSWORD__ ((git-password))
 
 resources:
 - name: concourse-template
   type: git
-  check_every: 240m
+  check_every: 24h
   source:
     uri: https://github.com/elgohr/concourse-templates
     branch: master
-- name: sonar-results
-  type: sonarqube-notifier
-  check_every: 5m
+- name: repository
+  type: git
   source:
-    target: *__SONARQUBE_URL__
-    sonartoken: *__SONARQUBE_TOKEN__
-    component: *__SONARQUBE_COMPONENT__
-    metrics: ncloc,complexity,violations,coverage
-- name: slack-alert
-  type: slack-notification
-  source:
-    url: *__SLACK_HOOK__
+    uri: *__GIT_URL__
+    branch: *__GIT_BRANCH__
+    username: *__GIT_USERNAME__
+    password: *__GIT_PASSWORD__
+- name: weekly
+  type: time
+  source: {interval: 168h}
 
 jobs:
-- name: publish
+- name: update-dependencies
   plan:
-  - aggregate:
-    - get: sonar-results
-      trigger: true
-    - get: concourse-template
-  - task: publish
-    file: concourse-template/sonarqube-notification/job.yml
-  - put: slack-alert
-    params:
-      channel: *__SLACK_CHANNEL__
-      text_file: output/slack_message
+    - aggregate:
+      - get: repository
+      - get: weekly
+        trigger: true
+    - task: update
+      file: concourse-template/maven-update/job.yml
+    - put: repository
+      params:
+        repository: output
