@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
+set -e
+
 echo -n 'New sonar result for ' > output/slack_message
 gron sonar-results/result.json \
 | grep key \

@@ -1,0 +1,17 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: lgohr/gron-docker
+
+inputs:
+- name: concourse-template
+- name: sonar-results
+
+outputs:
+- name: output
+
+run:
+  path: concourse-template/sonarqube-notification/job.sh

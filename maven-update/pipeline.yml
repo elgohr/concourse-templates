@@ -1,0 +1,52 @@
+# VARIABLES
+sonarqube_url: &__SONARQUBE_URL__ ((sonarqube-url))
+sonarqube_token: &__SONARQUBE_TOKEN__ ((sonarqube-token))
+sonarqube_project_name: &__SONARQUBE_COMPONENT__ ((sonarqube-component))
+slack_hook: &__SLACK_HOOK__ ((slack-hook))
+slack_channel: &__SLACK_CHANNEL__ ((slack-channel))
+
+resource_types:
+- name: sonarqube-notifier
+  type: docker-image
+  source:
+    repository: lgohr/sonarqube
+    tag: latest
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+    tag: latest
+
+resources:
+- name: concourse-template
+  type: git
+  check_every: 240m
+  source:
+    uri: https://github.com/elgohr/concourse-templates
+    branch: master
+- name: sonar-results
+  type: sonarqube-notifier
+  check_every: 5m
+  source:
+    target: *__SONARQUBE_URL__
+    sonartoken: *__SONARQUBE_TOKEN__
+    component: *__SONARQUBE_COMPONENT__
+    metrics: ncloc,complexity,violations,coverage
+- name: slack-alert
+  type: slack-notification
+  source:
+    url: *__SLACK_HOOK__
+
+jobs:
+- name: publish
+  plan:
+  - aggregate:
+    - get: sonar-results
+      trigger: true
+    - get: concourse-template
+  - task: publish
+    file: concourse-template/sonarqube-notification/job.yml
+  - put: slack-alert
+    params:
+      channel: *__SLACK_CHANNEL__
+      text_file: output/slack_message
