@@ -3,11 +3,13 @@ set -e
 
 cp concourse-template/gradle-update/init.gradle ~/.gradle/
 
+ls -la
+
 git clone repository output
 cd output
 
-gradle useLatestVersions \
-&& gradle useLatestVersionsCheck
+gradle useLatestVersions $GRADLE_PARAMETERS \
+&& gradle useLatestVersionsCheck $GRADLE_PARAMETERS
 
 git add .
 git config --global user.email "generated@concourse-template.de"

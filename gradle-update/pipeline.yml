@@ -4,6 +4,9 @@ git_branch: &__GIT_BRANCH__ ((git-branch))
 git_username: &__GIT_USERNAME__ ((git-username))
 git_password: &__GIT_PASSWORD__ ((git-password))
 
+# Something like secrets for build, etc.
+gradle_parameters: &__GRADLE_PARAMETERS__ ((gradle-parameters))
+
 resources:
 - name: concourse-template
   type: git
@@ -32,6 +35,8 @@ jobs:
         trigger: true
     - task: update
       file: concourse-template/gradle-update/job.yml
+      params:
+        GRADLE_PARAMETERS: *__GRADLE_PARAMETERS__
     - put: repository
       params:
         repository: output
