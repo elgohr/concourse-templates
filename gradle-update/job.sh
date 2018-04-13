@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 set -e
 
+mkdir -p ~/.gradle
 cp concourse-template/gradle-update/init.gradle ~/.gradle/
 
 ls -la
